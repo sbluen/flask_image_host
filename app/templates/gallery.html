@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}My Gallery - Image Host{% endblock %}
+
+{% block content %}
+<h1>My Gallery</h1>
+
+{% if current_user.images %}
+    <div class="image-grid">
+        {% for image in current_user.images %}
+            <div class="image-card">
+                <img src="{{ image.file_path }}" alt="{{ image.title or image.filename }}">
+                <h3>{{ image.title or image.filename }}</h3>
+                {% if image.description %}
+                    <p>{{ image.description[:100] }}...</p>
+                {% endif %}
+                <p class="image-date">{{ image.uploaded_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>You haven't uploaded any images yet. <a href="{{ url_for('main.upload') }}">Upload your first image</a></p>
+{% endif %}
+{% endblock %}

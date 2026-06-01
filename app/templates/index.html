@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Image Host{% endblock %}
+
+{% block content %}
+<div class="home-section">
+    <h1>Welcome to Image Host</h1>
+    <p>Share and manage your images with ease.</p>
+    
+    {% if not current_user.is_authenticated %}
+        <p>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Get Started</a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-secondary">Login</a>
+        </p>
+    {% else %}
+        <p>
+            <a href="{{ url_for('main.upload') }}" class="btn btn-primary">Upload New Image</a>
+        </p>
+    {% endif %}
+</div>
+
+<div class="gallery-preview">
+    <h2>Recent Images</h2>
+    <div class="image-grid">
+        {% for image in images %}
+            <div class="image-card">
+                <img src="{{ image.file_path }}" alt="{{ image.title or image.filename }}">
+                <h3>{{ image.title or image.filename }}</h3>
+                <p>by {{ image.user.username }}</p>
+            </div>
+        {% else %}
+            <p>No images uploaded yet.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
