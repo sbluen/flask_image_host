@@ -1,11 +1,13 @@
 import os
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = (
-        os.environ.get("DATABASE_URL") or "sqlite:///./instance/image_host.db"
+        os.environ.get("DATABASE_URL") or "sqlite:///" + os.path.join(basedir, "instance", "image_host.db")
     )
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Security

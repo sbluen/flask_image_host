@@ -66,9 +66,6 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        import pdb
-
-        pdb.set_trace()
         context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
