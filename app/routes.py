@@ -1,11 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session
+import posixpath
+import os
+
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, abort, send_from_directory, current_app
 from flask_login import login_user, logout_user, login_required, current_user
+from flask_wtf import file
+from flask_wtf import file
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from app import db
 from app.models import User, Image
 from app.forms import LoginForm, RegisterForm, UploadForm
-import os
 from datetime import datetime
 
 main_bp = Blueprint('main', __name__)
@@ -37,12 +41,16 @@ def upload():
     if form.validate_on_submit():
         if form.file.data:
             file = form.file.data
+
             if allowed_file(file.filename):
                 filename = secure_filename(file.filename)
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S_')
                 filename = timestamp + filename
-                file_path = os.path.join(UPLOAD_FOLDER, filename)
-                file.save(file_path)
+                file_path = posixpath.join(UPLOAD_FOLDER, filename)
+
+                absolute_upload_dir = os.path.abspath(os.path.join(current_app.root_path, UPLOAD_FOLDER))
+                native_file_path = os.path.join(absolute_upload_dir, filename)
+                file.save(native_file_path)
                 
                 image = Image(
                     filename=file.filename,
@@ -90,6 +98,17 @@ def login():
         else:
             flash('Invalid username or password', 'error')
     return render_template('login.html', form=form)
+
+@auth_bp.route('/' + UPLOAD_FOLDER + '/<path:filename>')
+def get_image(filename):
+    try:
+        print(filename)
+        # Securely fetch and return the file from the designated directory
+        absolute_path = os.path.join(current_app.root_path, UPLOAD_FOLDER)
+        return send_from_directory(absolute_path, filename)
+    except FileNotFoundError:
+        # Return a 404 error if the image file doesn't exist
+        abort(404)
 
 @auth_bp.route('/logout')
 @login_required

@@ -16,7 +16,7 @@ class User(UserMixin, db.Model):
     api_keys = db.relationship(
         "ApiKey", backref="user", lazy=True, cascade="all, delete-orphan"
     )
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now())
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -29,7 +29,7 @@ class Image(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     title = db.Column(db.String(255))
     description = db.Column(db.Text)
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    uploaded_at = db.Column(db.DateTime, default=datetime.now())
 
     def __repr__(self):
         return f"<Image {self.filename}>"
@@ -39,7 +39,7 @@ class ApiKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     key = db.Column(db.String(64), unique=True, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now())
 
     def __repr__(self):
         return f"<ApiKey {self.key[:8]}...>"
